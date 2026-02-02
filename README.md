@@ -34,7 +34,6 @@ golang-gin-boilerplate/
 │   ├── handlers/     # HTTP request handlers
 │   ├── middleware/   # Gin middleware
 │   ├── models/       # Data models/structs
-│   ├── repositories/ # Data access layer
 │   └── services/     # Business logic layer
 ├── tests/            # Test files
 ├── .env              # Environment variables

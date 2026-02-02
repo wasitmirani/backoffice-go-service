@@ -1,0 +1,69 @@
+# Git
+.git
+.gitignore
+.github
+
+# Documentation
+*.md
+docs/
+
+# CI/CD
+.github/
+
+# Tests
+tests/
+*_test.go
+
+# Development files
+.env
+.env.example
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+bin/
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Logs
+*.log
+logs/
+storage/logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Coverage
+coverage.out
+*.coverprofile
+
+# Dependencies (will be downloaded in container)
+vendor/
+
+# Kubernetes
+deployments/
+*.yaml
+*.yml
+
+# Scripts (optional, keep if needed in container)
+scripts/
+
+# Makefile
+Makefile
+
