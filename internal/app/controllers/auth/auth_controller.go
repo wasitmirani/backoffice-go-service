@@ -3,9 +3,10 @@ package auth
 import (
 	"net/http"
 
+	"BackofficeGoService/internal/pkg/errors"
+	"BackofficeGoService/internal/services"
+
 	"github.com/gin-gonic/gin"
-	"github.com/yourorg/backoffice-go-service/internal/pkg/errors"
-	"github.com/yourorg/backoffice-go-service/internal/services"
 )
 
 // AuthController handles authentication-related HTTP requests
@@ -37,7 +38,7 @@ type RegisterRequest struct {
 
 // LoginResponse represents the login response
 type LoginResponse struct {
-	Token string `json:"token"`
+	Token string      `json:"token"`
 	User  interface{} `json:"user"`
 }
 
@@ -153,4 +154,3 @@ func (ac *AuthController) RefreshToken(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
-

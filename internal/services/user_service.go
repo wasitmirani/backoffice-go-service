@@ -6,11 +6,12 @@ import (
 	"errors"
 	"fmt"
 
+	"BackofficeGoService/internal/app/models"
+	"BackofficeGoService/internal/pkg/database"
+	"BackofficeGoService/internal/pkg/logger"
+	"BackofficeGoService/internal/pkg/utils"
+
 	"github.com/google/uuid"
-	"github.com/yourorg/backoffice-go-service/internal/app/models"
-	"github.com/yourorg/backoffice-go-service/internal/pkg/database"
-	"github.com/yourorg/backoffice-go-service/internal/pkg/logger"
-	"github.com/yourorg/backoffice-go-service/internal/pkg/utils"
 	"gorm.io/gorm"
 )
 
@@ -56,7 +57,7 @@ func (s *UserService) GetUser(ctx context.Context, id string) (*models.User, err
 		sqlDB := primaryDriver.GetSQLDB()
 		query := `SELECT id, email, username, password, first_name, last_name, role, active, created_at, updated_at 
 		          FROM users WHERE id = $1`
-		
+
 		err := sqlDB.QueryRowContext(ctx, query, userID).Scan(
 			&user.ID, &user.Email, &user.Username, &user.Password,
 			&user.FirstName, &user.LastName, &user.Role, &user.Active,
@@ -127,7 +128,7 @@ func (s *UserService) CreateUser(ctx context.Context, req interface{}) (*models.
 		sqlDB := primaryDriver.GetSQLDB()
 		query := `INSERT INTO users (id, email, username, password, first_name, last_name, role, active, created_at, updated_at)
 		          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())`
-		
+
 		_, err := sqlDB.ExecContext(ctx, query,
 			user.ID, user.Email, user.Username, user.Password,
 			user.FirstName, user.LastName, user.Role, user.Active,
@@ -191,7 +192,7 @@ func (s *UserService) UpdateUser(ctx context.Context, id string, req interface{}
 		sqlDB := primaryDriver.GetSQLDB()
 		query := `UPDATE users SET email = $1, username = $2, first_name = $3, last_name = $4, 
 		          password = $5, updated_at = NOW() WHERE id = $6`
-		
+
 		_, err := sqlDB.ExecContext(ctx, query,
 			user.Email, user.Username, user.FirstName, user.LastName,
 			user.Password, user.ID,
@@ -228,7 +229,7 @@ func (s *UserService) DeleteUser(ctx context.Context, id string) error {
 		// Use raw SQL
 		sqlDB := primaryDriver.GetSQLDB()
 		query := `DELETE FROM users WHERE id = $1`
-		
+
 		_, err := sqlDB.ExecContext(ctx, query, userID)
 		if err != nil {
 			return fmt.Errorf("failed to delete user: %w", err)
@@ -259,7 +260,7 @@ func (s *UserService) ListUsers(ctx context.Context, limit, offset int) ([]*mode
 		sqlDB := primaryDriver.GetSQLDB()
 		query := `SELECT id, email, username, password, first_name, last_name, role, active, created_at, updated_at 
 		          FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2`
-		
+
 		rows, err := sqlDB.QueryContext(ctx, query, limit, offset)
 		if err != nil {
 			return nil, fmt.Errorf("database error: %w", err)
@@ -292,4 +293,3 @@ func (s *UserService) ListUsers(ctx context.Context, limit, offset int) ([]*mode
 func (s *UserService) Health(ctx context.Context) error {
 	return s.db.Health(ctx)["primary"]
 }
-

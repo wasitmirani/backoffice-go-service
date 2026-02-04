@@ -1,16 +1,15 @@
 package main
 
 import (
+	"BackofficeGoService/config"
+	"BackofficeGoService/internal/app"
+	"BackofficeGoService/internal/pkg/logger"
 	"context"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-
-	"github.com/yourorg/backoffice-go-service/config"
-	"github.com/yourorg/backoffice-go-service/internal/app"
-	"github.com/yourorg/backoffice-go-service/internal/pkg/logger"
 )
 
 func main() {

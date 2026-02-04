@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"BackofficeGoService/internal/pkg/errors"
+	"BackofficeGoService/internal/services"
+
 	"github.com/gin-gonic/gin"
-	"github.com/yourorg/backoffice-go-service/internal/pkg/errors"
-	"github.com/yourorg/backoffice-go-service/internal/services"
 )
 
 // UserController handles user-related HTTP requests
@@ -196,4 +197,3 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 		"message": "User deleted successfully",
 	})
 }
-

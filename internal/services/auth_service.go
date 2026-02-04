@@ -7,13 +7,15 @@ import (
 	"fmt"
 	"time"
 
+	"BackofficeGoService/internal/app/models"
+	"BackofficeGoService/internal/pkg/database"
+	"BackofficeGoService/internal/pkg/logger"
+	"BackofficeGoService/internal/pkg/utils"
+
+	"BackofficeGoService/config"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"github.com/yourorg/backoffice-go-service/config"
-	"github.com/yourorg/backoffice-go-service/internal/app/models"
-	"github.com/yourorg/backoffice-go-service/internal/pkg/database"
-	"github.com/yourorg/backoffice-go-service/internal/pkg/logger"
-	"github.com/yourorg/backoffice-go-service/internal/pkg/utils"
 	"gorm.io/gorm"
 )
 
@@ -57,7 +59,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (map[st
 		sqlDB := primaryDriver.GetSQLDB()
 		query := `SELECT id, email, username, password, first_name, last_name, role, active, created_at, updated_at 
 		          FROM users WHERE email = $1 AND active = $2`
-		
+
 		err := sqlDB.QueryRowContext(ctx, query, email, true).Scan(
 			&user.ID, &user.Email, &user.Username, &user.Password,
 			&user.FirstName, &user.LastName, &user.Role, &user.Active,
@@ -146,7 +148,7 @@ func (s *AuthService) Register(ctx context.Context, req interface{}) (*models.Us
 		sqlDB := primaryDriver.GetSQLDB()
 		query := `INSERT INTO users (id, email, username, password, first_name, last_name, role, active, created_at, updated_at)
 		          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
-		
+
 		_, err := sqlDB.ExecContext(ctx, query,
 			user.ID, user.Email, user.Username, user.Password,
 			user.FirstName, user.LastName, user.Role, user.Active,
@@ -179,7 +181,7 @@ func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (ma
 	// Generate new access token
 	userID, _ := (*claims)["user_id"].(string)
 	role, _ := (*claims)["role"].(string)
-	
+
 	token, err := s.generateToken(userID, email, role)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %w", err)
@@ -203,9 +205,9 @@ func (s *AuthService) generateToken(userID, email, role string) (string, error) 
 		"user_id": userID,
 		"email":   email,
 		"role":    role,
-		"exp":      time.Now().Add(s.config.JWT.Expiration).Unix(),
-		"iat":      time.Now().Unix(),
-		"iss":      s.config.JWT.Issuer,
+		"exp":     time.Now().Add(s.config.JWT.Expiration).Unix(),
+		"iat":     time.Now().Unix(),
+		"iss":     s.config.JWT.Issuer,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

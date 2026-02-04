@@ -1,10 +1,13 @@
 package config
 
 import (
+	"BackofficeGoService/internal/pkg/database"
+	"log"
+	"os"
 	"time"
 
 	"github.com/spf13/viper"
-	"github.com/yourorg/backoffice-go-service/internal/pkg/database"
+	"github.com/subosito/gotenv"
 )
 
 // Config holds all application configuration
@@ -30,29 +33,29 @@ type ServerConfig struct {
 type DatabaseConfig struct {
 	// Primary database (default)
 	Primary DatabaseConnectionConfig `mapstructure:"primary"`
-	
+
 	// Additional databases can be added here
 	Secondary DatabaseConnectionConfig `mapstructure:"secondary"`
-	
+
 	// Multiple databases support
 	Databases map[string]DatabaseConnectionConfig `mapstructure:"databases"`
 }
 
 // DatabaseConnectionConfig holds configuration for a single database connection
 type DatabaseConnectionConfig struct {
-	Driver      string        `mapstructure:"driver"`       // postgresql, mysql, mongodb, sqlite
-	Host        string        `mapstructure:"host"`
-	Port        string        `mapstructure:"port"`
-	User        string        `mapstructure:"user"`
-	Password    string        `mapstructure:"password"`
-	DBName      string        `mapstructure:"dbname"`
-	SSLMode     string        `mapstructure:"sslmode"`      // For PostgreSQL
-	Charset     string        `mapstructure:"charset"`      // For MySQL
-	MaxOpenConns int          `mapstructure:"max_open_conns"`
-	MaxIdleConns int          `mapstructure:"max_idle_conns"`
+	Driver          string        `mapstructure:"driver"` // postgresql, mysql, mongodb, sqlite
+	Host            string        `mapstructure:"host"`
+	Port            string        `mapstructure:"port"`
+	User            string        `mapstructure:"user"`
+	Password        string        `mapstructure:"password"`
+	DBName          string        `mapstructure:"dbname"`
+	SSLMode         string        `mapstructure:"sslmode"` // For PostgreSQL
+	Charset         string        `mapstructure:"charset"` // For MySQL
+	MaxOpenConns    int           `mapstructure:"max_open_conns"`
+	MaxIdleConns    int           `mapstructure:"max_idle_conns"`
 	ConnMaxLifetime time.Duration `mapstructure:"conn_max_lifetime"`
-	ConnMaxIdleTime time.Duration  `mapstructure:"conn_max_idle_time"`
-	UseGorm     bool          `mapstructure:"use_gorm"`
+	ConnMaxIdleTime time.Duration `mapstructure:"conn_max_idle_time"`
+	UseGorm         bool          `mapstructure:"use_gorm"`
 }
 
 // JWTConfig holds JWT configuration
@@ -85,21 +88,33 @@ type LoggingConfig struct {
 
 // LoadConfig loads configuration from environment variables and config files
 func LoadConfig() (*Config, error) {
+	// Load .env file if it exists (for local development)
+	// This must be done before viper.AutomaticEnv() to ensure .env values are available
+	if err := gotenv.Load(); err != nil {
+		// .env file is optional, so we only log a warning if it doesn't exist
+		// This allows the app to work with system environment variables only
+		if !os.IsNotExist(err) {
+			log.Printf("Warning: Failed to load .env file: %v", err)
+		}
+	}
+
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("./config")
 	viper.AddConfigPath("../config")
-	
-	// Enable environment variables
+
+	// Enable environment variables (reads from both .env file and system env)
+	// System environment variables take precedence over .env file values
 	viper.AutomaticEnv()
-	
+
 	// Set defaults
 	setDefaults()
-	
+
 	// Try to read config file (optional)
 	_ = viper.ReadInConfig()
-	
+
+	// Build configuration
 	cfg := &Config{
 		Server: ServerConfig{
 			Port:         getString("SERVER_PORT", "8080"),
@@ -111,19 +126,19 @@ func LoadConfig() (*Config, error) {
 		},
 		Database: DatabaseConfig{
 			Primary: DatabaseConnectionConfig{
-				Driver:         getString("DB_DRIVER", "postgresql"),
-				Host:           getString("DB_HOST", "localhost"),
-				Port:           getString("DB_PORT", "5432"),
-				User:           getString("DB_USER", "postgres"),
-				Password:       getString("DB_PASSWORD", ""),
-				DBName:         getString("DB_NAME", "backoffice"),
-				SSLMode:        getString("DB_SSLMODE", "disable"),
-				Charset:        getString("DB_CHARSET", "utf8mb4"),
-				MaxOpenConns:   getInt("DB_MAX_OPEN_CONNS", 25),
-				MaxIdleConns:   getInt("DB_MAX_IDLE_CONNS", 5),
+				Driver:          getString("DB_DRIVER", "postgresql"),
+				Host:            getString("DB_HOST", "localhost"),
+				Port:            getString("DB_PORT", "5432"),
+				User:            getString("DB_USER", "postgres"),
+				Password:        getString("DB_PASSWORD", ""),
+				DBName:          getString("DB_NAME", "backoffice"),
+				SSLMode:         getString("DB_SSLMODE", "disable"),
+				Charset:         getString("DB_CHARSET", "utf8mb4"),
+				MaxOpenConns:    getInt("DB_MAX_OPEN_CONNS", 25),
+				MaxIdleConns:    getInt("DB_MAX_IDLE_CONNS", 5),
 				ConnMaxLifetime: getDuration("DB_CONN_MAX_LIFETIME", 5*time.Minute),
 				ConnMaxIdleTime: getDuration("DB_CONN_MAX_IDLE_TIME", 10*time.Minute),
-				UseGorm:        getBool("DB_USE_GORM", true),
+				UseGorm:         getBool("DB_USE_GORM", true),
 			},
 			Databases: make(map[string]DatabaseConnectionConfig),
 		},
@@ -150,14 +165,14 @@ func LoadConfig() (*Config, error) {
 			DailyRotate: getBool("LOG_DAILY_ROTATE", true),
 		},
 	}
-	
+
 	return cfg, nil
 }
 
 // GetDatabaseDriverConfig converts DatabaseConnectionConfig to appropriate driver config
 func (dbc *DatabaseConnectionConfig) GetDatabaseDriverConfig() (database.DriverType, interface{}, error) {
 	driverType := database.DriverType(dbc.Driver)
-	
+
 	switch driverType {
 	case database.DriverPostgreSQL:
 		return driverType, &database.PostgresConfig{
@@ -173,7 +188,7 @@ func (dbc *DatabaseConnectionConfig) GetDatabaseDriverConfig() (database.DriverT
 			ConnMaxIdleTime: dbc.ConnMaxIdleTime,
 			UseGorm:         dbc.UseGorm,
 		}, nil
-		
+
 	case database.DriverMySQL:
 		return driverType, &database.MySQLConfig{
 			Host:            dbc.Host,
@@ -190,7 +205,7 @@ func (dbc *DatabaseConnectionConfig) GetDatabaseDriverConfig() (database.DriverT
 			ConnMaxIdleTime: dbc.ConnMaxIdleTime,
 			UseGorm:         dbc.UseGorm,
 		}, nil
-		
+
 	default:
 		return "", nil, database.ErrUnsupportedDriver
 	}
