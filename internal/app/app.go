@@ -5,15 +5,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"BackofficeGoService/internal/app/controllers/auth"
 	"BackofficeGoService/internal/app/controllers/user"
 	"BackofficeGoService/internal/pkg/database"
 	"BackofficeGoService/internal/pkg/logger"
 	"BackofficeGoService/internal/services"
-
 	"BackofficeGoService/config"
-
-	"github.com/gin-gonic/gin"
 )
 
 // Application represents the main application
