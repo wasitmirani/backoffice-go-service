@@ -6,10 +6,10 @@ import (
 	"errors"
 	"fmt"
 
-	"BackofficeGoService/internal/app/models"
-	"BackofficeGoService/internal/pkg/database"
-	"BackofficeGoService/internal/pkg/logger"
-	"BackofficeGoService/internal/pkg/utils"
+	"BaseKit-with-GoLang/internal/app/models"
+	"BaseKit-with-GoLang/internal/pkg/database"
+	"BaseKit-with-GoLang/internal/shared/logger"
+	"BaseKit-with-GoLang/internal/shared/utils"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"BackofficeGoService/internal/pkg/database"
+	"BaseKit-with-GoLang/internal/pkg/database"
 	"log"
 	"os"
 	"time"

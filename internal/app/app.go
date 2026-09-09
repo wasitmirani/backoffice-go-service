@@ -7,12 +7,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"BackofficeGoService/internal/app/controllers/auth"
-	"BackofficeGoService/internal/app/controllers/user"
-	"BackofficeGoService/internal/pkg/database"
-	"BackofficeGoService/internal/pkg/logger"
-	"BackofficeGoService/internal/services"
-	"BackofficeGoService/config"
+	"BaseKit-with-GoLang/internal/app/controllers/auth"
+	"BaseKit-with-GoLang/internal/app/controllers/user"
+	"BaseKit-with-GoLang/internal/pkg/database"
+	"BaseKit-with-GoLang/internal/shared/logger"
+	"BaseKit-with-GoLang/internal/services"
+	"BaseKit-with-GoLang/config"
 )
 
 // Application represents the main application

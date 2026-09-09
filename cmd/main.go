@@ -8,9 +8,9 @@ import (
 	"syscall"
 	"time"
 
-	"BackofficeGoService/config"
-	"BackofficeGoService/internal/app"
-	"BackofficeGoService/internal/pkg/logger"
+	"BaseKit-with-GoLang/config"
+	"BaseKit-with-GoLang/internal/app"
+	"BaseKit-with-GoLang/internal/shared/logger"
 )
 
 func main() {

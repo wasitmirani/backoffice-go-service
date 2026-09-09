@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"time"
 
-	"BackofficeGoService/internal/app/models"
-	"BackofficeGoService/internal/pkg/database"
-	"BackofficeGoService/internal/pkg/logger"
-	"BackofficeGoService/internal/pkg/utils"
+	"BaseKit-with-GoLang/internal/app/models"
+	"BaseKit-with-GoLang/internal/pkg/database"
+	"BaseKit-with-GoLang/internal/shared/logger"
+	"BaseKit-with-GoLang/internal/shared/utils"
 
-	"BackofficeGoService/config"
+	"BaseKit-with-GoLang/config"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"

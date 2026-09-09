@@ -3,8 +3,8 @@ package auth
 import (
 	"net/http"
 
-	"BackofficeGoService/internal/pkg/errors"
-	"BackofficeGoService/internal/services"
+	"BaseKit-with-GoLang/internal/shared/errors"
+	"BaseKit-with-GoLang/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
