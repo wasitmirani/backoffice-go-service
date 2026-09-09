@@ -1,107 +1,135 @@
-# Backoffice Go Service
+# BaseKit with GoLang
 
-A production-ready Golang starter kit built with Gin framework, featuring clean architecture, multi-database support, daily file logging, and comprehensive CI/CD pipeline.
+A production-ready Golang starter kit built with the Gin framework. It provides clean architecture, multi-database support, daily file logging, infrastructure stubs (Redis, messaging, storage), and a GitHub Actions CI/CD pipeline.
 
-## 🚀 Features
+## Features
 
-- **Gin Framework** - High-performance HTTP web framework for Go
-- **Clean Architecture** - Controller → Service → Database pattern
-- **Multi-Database Support** - PostgreSQL, MySQL with easy extensibility
-- **Daily File Logging** - Automatic log rotation with daily file generation
-- **JWT Authentication** - Secure token-based authentication
-- **Multi-App Support** - Designed for multiple applications
-- **Docker Support** - Containerization-ready with optimized Dockerfile
-- **CI/CD Pipeline** - GitHub Actions for automated testing and deployment
-- **Environment Configuration** - Flexible .env-based configuration
-- **Health Checks** - Built-in health and readiness endpoints
-- **Graceful Shutdown** - Proper application lifecycle management
+- **Gin Framework** — High-performance HTTP web framework for Go
+- **Clean Architecture** — Controller → Service → Database pattern
+- **Multi-Database Support** — PostgreSQL and MySQL (GORM or raw SQL), designed for more drivers
+- **Daily File Logging** — stdout, file, or stack with daily/size-based rotation
+- **JWT Authentication** — Token-based auth with bcrypt password hashing
+- **Modular Config** — Split config packages for app, auth, cache, database, queue, session, and services
+- **Shared Utilities** — Common helpers, enums, errors, logger, JWT/hash utils, and validation under `internal/shared`
+- **Infrastructure Ready** — Redis, email, Kafka, RabbitMQ, S3, and Azure Blob client stubs
+- **Workers & WebSockets** — Placeholders for background jobs and real-time features
+- **Docker & Kubernetes** — Container and K8s manifests under `deployments/`
+- **CI/CD Pipeline** — GitHub Actions for CI, CD, and releases
+- **Health Checks** — Built-in `/health` and `/ready` endpoints
+- **Graceful Shutdown** — Proper application lifecycle management
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 .
-├── cmd/                          # Application entry points
-│   └── main.go                  # Main application entry
-├── config/                       # Configuration management
-│   └── config.go                # Configuration loader
-├── internal/                     # Internal application code
-│   ├── app/                     # Application layer
-│   │   ├── app.go              # Application initialization
-│   │   ├── controllers/        # HTTP controllers
-│   │   │   ├── auth/          # Authentication controllers
-│   │   │   └── user/          # User management controllers
-│   │   ├── models/            # Domain models
-│   │   └── middleware/        # HTTP middleware
-│   ├── services/                # Business logic layer
-│   │   ├── auth_service.go
-│   │   └── user_service.go
-│   ├── pkg/                     # Shared packages
-│   │   ├── database/           # Database abstraction layer
-│   │   ├── logger/             # Logging (stdout/file/stack)
-│   │   ├── errors/             # Error handling
-│   │   ├── utils/              # Utilities (JWT, hash)
-│   │   └── validator/          # Validation
-│   ├── routes/                  # Route definitions
-│   ├── database/                # Database migrations
-│   └── infrastructure/          # External integrations
-├── deployments/                  # Deployment configs
-│   ├── docker/
-│   └── kubernetes/
-├── scripts/                      # Utility scripts
-├── tests/                        # Test files
-├── .github/                      # GitHub Actions workflows
-├── Dockerfile                    # Docker image definition
-├── Makefile                      # Build automation
-└── go.mod                        # Go module definition
+├── cmd/
+│   └── main.go                 # Application entry point
+├── config/                     # Configuration (Viper + .env)
+│   ├── config.go               # Root config loader
+│   ├── app.go                  # App settings
+│   ├── auth.go                 # Auth / JWT
+│   ├── cache.go                # Cache
+│   ├── database.go             # Database
+│   ├── queue.go                # Queue / messaging
+│   ├── session.go              # Session
+│   └── services.go             # Third-party services
+├── internal/
+│   ├── app/                    # Application layer
+│   │   ├── app.go              # App bootstrap, DI, routes wiring
+│   │   ├── controllers/        # HTTP controllers (auth, user)
+│   │   └── models/             # Domain models
+│   ├── services/               # Business logic
+│   ├── routes/                 # Route registration
+│   ├── pkg/                    # Core packages
+│   │   ├── constants/          # App constants
+│   │   ├── database/           # DB drivers, factory, manager
+│   │   ├── logger/             # Logging (stdout / file / stack)
+│   │   ├── errors/             # App error types
+│   │   ├── utils/              # JWT, hashing
+│   │   ├── validator/          # Request validation
+│   │   └── service/            # Service interfaces
+│   ├── shared/                 # Shared cross-cutting code
+│   │   ├── common/             # Pagination and shared DTOs
+│   │   ├── enums/              # Domain enums
+│   │   ├── errors/             # Shared errors
+│   │   ├── logger/             # Shared logger helpers
+│   │   ├── utils/              # Shared utilities
+│   │   └── validator/          # Shared validation
+│   ├── infrastructure/         # External integrations
+│   │   ├── email/
+│   │   ├── messaging/          # Kafka, RabbitMQ
+│   │   ├── redis/
+│   │   └── storage/            # S3, Azure
+│   ├── database/               # Migrations & seeders
+│   ├── storage/                # Local public/private file storage
+│   ├── templates/              # Email templates
+│   ├── websocket/              # WebSocket handlers
+│   ├── workers/                # Background workers
+│   └── docs/                   # API docs (Swagger)
+├── deployments/
+│   ├── docker/                 # docker-compose
+│   └── kubernetes/            # Deployment, service, ingress
+├── scripts/                    # deploy, migrate, seed
+├── tests/                      # Integration / package tests
+├── .github/workflows/          # CI, CD, release
+├── .env.example                # Environment template
+├── Dockerfile
+├── Makefile
+└── go.mod
 ```
 
-## 🛠️ Getting Started
+## Getting Started
 
 ### Prerequisites
 
 - Go 1.24 or higher
-- PostgreSQL or MySQL (or any supported database)
+- PostgreSQL or MySQL
 - Git
-- Docker (optional, for containerized deployment)
+- Docker (optional)
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
-   git clone https://github.com/yourorg/backoffice-go-service.git
-   cd backoffice-go-service
+   git clone https://github.com/wasitmirani/BaseKit-with-GoLang.git
+   cd BaseKit-with-GoLang
    ```
 
 2. **Set up environment variables**
+
    ```bash
-   cp ENV_EXAMPLE.md .env
+   cp .env.example .env
    # Edit .env with your configuration
    ```
 
 3. **Install dependencies**
+
    ```bash
    go mod download
    go mod tidy
    ```
 
 4. **Configure database**
+
    - Update database credentials in `.env`
-   - Run migrations (if available)
+   - Optionally enable `DB_MIGRATE=true` / `DB_SEED=true` for local setup
 
 5. **Run the application**
+
    ```bash
    # Development mode
    make dev
-   
+
    # Or directly
-   go run cmd/main.go
+   go run ./cmd/main.go
    ```
 
-## 🔧 Configuration
+The API listens on `http://localhost:8080` by default.
 
-### Environment Variables
+## Configuration
 
-Key configuration options (see `ENV_EXAMPLE.md` for complete list):
+Key options (see [`.env.example`](.env.example) or [`ENV_EXAMPLE.md`](ENV_EXAMPLE.md) for the full list):
 
 ```bash
 # Application
@@ -132,44 +160,49 @@ LOG_CHANNEL=file          # stdout, file, or stack
 LOG_LEVEL=debug
 LOG_FILE_PATH=./storage/logs
 LOG_FILE_NAME=app
-LOG_DAILY_ROTATE=true     # Daily files or single file
-LOG_MAX_SIZE=10           # MB
+LOG_DAILY_ROTATE=true
+LOG_MAX_SIZE=10
 LOG_MAX_BACKUPS=5
-LOG_MAX_AGE=28            # days
+LOG_MAX_AGE=28
 ```
 
-### Logging Configuration
+### Logging
 
-The application supports three logging modes:
+| Channel | Behavior |
+|---------|----------|
+| `stdout` | Console only (good for local dev) |
+| `file` | Rotated log files (`app-YYYY-MM-DD.log` when daily rotate is on) |
+| `stack` | Both stdout and file |
 
-- **stdout**: Logs to console (default for development)
-- **file**: Logs to daily rotated files (`app-2024-01-15.log`)
-- **stack**: Logs to both stdout and file
-
-Set `LOG_DAILY_ROTATE=true` for daily files or `false` for single file with size-based rotation.
-
-## 📦 API Endpoints
+## API Endpoints
 
 ### Authentication
-- `POST /api/v1/auth/register` - Register new user
-- `POST /api/v1/auth/login` - Login user
-- `POST /api/v1/auth/logout` - Logout user
-- `POST /api/v1/auth/refresh` - Refresh JWT token
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/v1/auth/register` | Register a new user |
+| `POST` | `/api/v1/auth/login` | Login |
+| `POST` | `/api/v1/auth/logout` | Logout |
+| `POST` | `/api/v1/auth/refresh` | Refresh JWT |
 
 ### Users
-- `GET /api/v1/users` - List users (with pagination)
-- `GET /api/v1/users/:id` - Get user by ID
-- `POST /api/v1/users` - Create user
-- `PUT /api/v1/users/:id` - Update user
-- `DELETE /api/v1/users/:id` - Delete user
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/v1/users` | List users (paginated) |
+| `GET` | `/api/v1/users/:id` | Get user by ID |
+| `POST` | `/api/v1/users` | Create user |
+| `PUT` | `/api/v1/users/:id` | Update user |
+| `DELETE` | `/api/v1/users/:id` | Delete user |
 
 ### Health
-- `GET /health` - Health check
-- `GET /ready` - Readiness check
 
-## 🏗️ Architecture
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/health` | Liveness |
+| `GET` | `/ready` | Readiness |
 
-### Controller → Service → Database
+## Architecture
 
 ```
 HTTP Request
@@ -178,174 +211,137 @@ Controller (HTTP handling, validation)
     ↓
 Service (Business logic)
     ↓
-Database Driver (Data access)
+Database Driver (GORM or raw SQL)
 ```
 
-### Database Drivers
+### Database drivers
 
-The application supports multiple database drivers through a clean abstraction:
+- **PostgreSQL** — GORM and raw SQL
+- **MySQL** — GORM and raw SQL
+- **Extensible** — Add MongoDB, SQLite, etc. via the driver interface
 
-- **PostgreSQL** - Full support with GORM and raw SQL
-- **MySQL** - Full support with GORM and raw SQL
-- **Extensible** - Easy to add MongoDB, SQLite, etc.
+Optional secondary databases can be configured in `.env` (`DB_SECONDARY_*`).
 
-### Multi-Database Support
-
-Configure multiple databases in `.env`:
+## Docker
 
 ```bash
-# Primary database
-DB_DRIVER=postgresql
-DB_HOST=localhost
-...
-
-# Secondary database (optional)
-DB_SECONDARY_DRIVER=mysql
-DB_SECONDARY_HOST=analytics-db
-...
-```
-
-## 🐳 Docker
-
-### Build Docker Image
-
-```bash
+# Build
 make docker-build
-# Or
+# or
 docker build -t backoffice-service:latest .
-```
 
-### Run Container
-
-```bash
+# Run
 make docker-run
-# Or
+# or
 docker run -p 8080:8080 --env-file .env backoffice-service:latest
-```
 
-### Docker Compose
-
-```bash
+# Compose
 cd deployments/docker
 docker-compose up -d
 ```
 
-## 🧪 Testing
+## Testing
 
 ```bash
-# Run all tests
-make test
-
-# Run with coverage
-make test-coverage
-
-# Run verbose tests
-make test-verbose
+make test              # All tests + coverage HTML
+make test-coverage     # Coverage summary
+make test-verbose      # Verbose
 ```
 
-## 🔍 Code Quality
+## Code Quality
 
 ```bash
-# Run linters
-make lint
-
-# Fix linting issues
-make lint-fix
-
-# Run security scan
-make security
-
-# Format code
-make fmt
+make lint              # golangci-lint
+make lint-fix         # Auto-fix where possible
+make security          # gosec scan
+make fmt               # Format
 ```
 
-## 🚀 CI/CD
+## CI/CD
 
-The project includes comprehensive GitHub Actions workflows:
+GitHub Actions workflows cover:
 
-- **CI**: Automated testing, linting, building, and security scanning
-- **CD**: Automated Docker builds and deployments
-- **Release**: Automated release creation with binaries
+- **CI** — test, lint, build, security scan
+- **CD** — Docker build and deploy
+- **Release** — versioned binaries / images
 
-See [CI_CD.md](CI_CD.md) for detailed documentation.
+See [CI_CD.md](CI_CD.md) and [`.github/workflows/README.md`](.github/workflows/README.md).
 
-## 📝 Makefile Commands
+## Makefile
 
 ```bash
-make help          # Show all available commands
-make build         # Build the application
-make run           # Run the application
-make test          # Run tests
-make lint          # Run linters
-make docker-build  # Build Docker image
-make docker-run    # Run Docker container
-make dev           # Run in development mode
-make install-tools # Install development tools
+make help            # List targets
+make build           # Build binary to bin/
+make run             # Run app
+make test            # Tests
+make lint            # Linters
+make docker-build    # Docker image
+make docker-run      # Run container
+make dev             # Dev mode (stdout debug logs)
+make deps            # Download & tidy modules
+make migrate         # Run migrations
+make seed            # Seed data
+make install-tools   # Install golangci-lint, gosec, etc.
 ```
 
-## 🔐 Security
+## Security
 
-- JWT-based authentication
-- Password hashing with bcrypt
-- Security scanning with gosec
-- Non-root Docker user
+- JWT authentication
+- bcrypt password hashing
 - Input validation
+- gosec in CI / `make security`
+- Non-root Docker user
 
-## 📚 Documentation
+## Documentation
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Architecture overview
-- [CI_CD.md](CI_CD.md) - CI/CD documentation
-- [LOGGING_SETUP.md](LOGGING_SETUP.md) - Logging configuration
-- [ENV_EXAMPLE.md](ENV_EXAMPLE.md) - Environment variables reference
-- [STRUCTURE_OPTIMIZATION.md](STRUCTURE_OPTIMIZATION.md) - Structure guide
+| Doc | Description |
+|-----|-------------|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Architecture overview |
+| [CI_CD.md](CI_CD.md) | CI/CD details |
+| [LOGGING_SETUP.md](LOGGING_SETUP.md) | Logging setup |
+| [ENV_EXAMPLE.md](ENV_EXAMPLE.md) | Env var reference |
+| [STRUCTURE_OPTIMIZATION.md](STRUCTURE_OPTIMIZATION.md) | Structure notes |
+| [UPDATES.md](UPDATES.md) | Change summary |
 
-## 🛣️ Roadmap
+## Roadmap
 
-- [ ] Add MongoDB driver implementation
-- [ ] Add SQLite driver implementation
-- [ ] Add Redis caching layer
-- [ ] Add rate limiting middleware
-- [ ] Add API documentation (Swagger)
-- [ ] Add database migrations system
-- [ ] Add monitoring and metrics
+- [ ] Complete MongoDB / SQLite drivers
+- [ ] Wire Redis caching into the request path
+- [ ] Rate limiting middleware
+- [ ] Finish Swagger / OpenAPI from `internal/docs`
+- [ ] Database migration runner integration
+- [ ] Monitoring and metrics (Prometheus / OpenTelemetry)
+- [ ] Flesh out workers and WebSocket handlers
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+3. Commit (`git commit -m 'feat: add amazing feature'`)
+4. Push (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-### Commit Message Format
+### Commit message format
 
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
+Follow [Conventional Commits](https://conventionalcommits.org/):
 
 ```
 <type>(<scope>): <subject>
-
-<body>
-
-<footer>
 ```
 
 Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
 
-## 📄 License
+## Author
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Wasit Mirani — [GitHub](https://github.com/wasitmirani)
 
-## 👤 Author
+## Acknowledgments
 
-Wasit Mirani - [GitHub Profile](https://github.com/wasitmirani)
-
-## 🙏 Acknowledgments
-
-- [Gin Web Framework](https://github.com/gin-gonic/gin)
+- [Gin](https://github.com/gin-gonic/gin)
 - [GORM](https://gorm.io/)
 - [Viper](https://github.com/spf13/viper)
-- Go community for excellent libraries and tools
+- The Go community
 
 ---
 
-⭐ Star this repo if you find it useful!
+Star this repo if you find it useful.
